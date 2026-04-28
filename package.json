@@ -1,0 +1,11 @@
+{
+  "name": "doksa",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": ["apps/*"],
+  "scripts": {
+    "dev:api": "npm run dev --workspace=apps/api",
+    "dev:web": "npm run dev --workspace=apps/web",
+    "install:all": "npm install --workspaces"
+  }
+}

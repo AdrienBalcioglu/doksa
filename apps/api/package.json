@@ -1,0 +1,20 @@
+{
+  "name": "@doksa/api",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.43.4",
+    "app-store-scraper": "^0.15.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "google-play-scraper": "^9.1.0",
+    "node-cron": "^3.0.3",
+    "resend": "^3.2.0"
+  }
+}
