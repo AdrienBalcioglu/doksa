@@ -93,7 +93,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Cron schedule
 
-The scraper runs every 6 hours automatically when the API server is running (`0 */6 * * *`). To trigger a manual scrape, restart the server or add a `POST /scrape` endpoint.
+The scraper runs every 6 hours automatically when the API server is running (`0 */6 * * *`). To trigger a manual scrape, call `POST /scrape` (optionally with an `app_id`).
 
 ## Database schema
 
@@ -105,3 +105,16 @@ reviews     — id, app_id, platform, review_id, author, rating, body,
               UNIQUE (review_id, platform)
 alerts      — id, app_id, user_id, channel, webhook_url, email, min_rating, active
 ```
+
+## Security notes
+
+Doksa is a single-tenant MVP: the API works for one demo user and has no login yet.
+
+- The API only accepts browser calls from the origins listed in `CORS_ORIGINS`, and limits requests per IP (`RATE_LIMIT_PER_MINUTE`, `WRITE_LIMIT_PER_MINUTE`).
+- Slack alerts only accept `https://hooks.slack.com/...` URLs, so the server cannot be made to call an arbitrary address.
+- The API uses the Supabase service role key and your Resend key. Keep it on a private network or add authentication before you expose it to the internet.
+- Never commit a `.env` file. Only the `.env.example` files belong in the repository.
+
+## License
+
+[MIT](LICENSE) © 2026 Adrien Balcioglu

@@ -3,6 +3,20 @@ import supabase from '../lib/supabase.js';
 
 const router = Router();
 
+// The server posts to this URL: only real Slack incoming webhooks are accepted.
+function isSlackWebhook(url) {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === 'https:' && parsed.hostname === 'hooks.slack.com';
+  } catch {
+    return false;
+  }
+}
+
+function isEmail(value) {
+  return typeof value === 'string' && value.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
 router.get('/', async (req, res) => {
   const { app_id, user_id } = req.query;
   let query = supabase.from('alerts').select('*');
@@ -24,6 +38,12 @@ router.post('/', async (req, res) => {
   if (channel === 'email' && !email) {
     return res.status(400).json({ error: 'email is required for email alerts' });
   }
+  if (webhook_url && !isSlackWebhook(webhook_url)) {
+    return res.status(400).json({ error: 'webhook_url must be a Slack incoming webhook (https://hooks.slack.com/...)' });
+  }
+  if (email && !isEmail(email)) {
+    return res.status(400).json({ error: 'email is invalid' });
+  }
 
   const { data, error } = await supabase
     .from('alerts')
@@ -38,6 +58,12 @@ router.post('/', async (req, res) => {
 router.patch('/:id', async (req, res) => {
   const { id } = req.params;
   const { active, webhook_url, email, min_rating } = req.body;
+  if (webhook_url && !isSlackWebhook(webhook_url)) {
+    return res.status(400).json({ error: 'webhook_url must be a Slack incoming webhook (https://hooks.slack.com/...)' });
+  }
+  if (email && !isEmail(email)) {
+    return res.status(400).json({ error: 'email is invalid' });
+  }
   const updates = {};
   if (typeof active === 'boolean') updates.active = active;
   if (webhook_url !== undefined) updates.webhook_url = webhook_url;
